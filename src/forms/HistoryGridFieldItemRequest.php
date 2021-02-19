@@ -4,7 +4,9 @@ namespace gorriecoe\DataObjectHistory\Forms;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\Form;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
@@ -96,7 +98,7 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
             );
         }
 
-        return $version;
+        return $versioned_record;
     }
 
     public function view($request)
@@ -198,22 +200,26 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
         }
 
         // Save from form data
-        $record->rollbackRecursive($record->Version);
-        $link = '<a href="' . $this->Link('edit') . '">"'
-            . htmlspecialchars($record->Title, ENT_QUOTES)
-            . '"</a>';
+        try {
+            $record->rollbackRecursive($record->Version);
+            $link = '<a href="' . $this->Link('edit') . '">"'
+                . htmlspecialchars($record->Title, ENT_QUOTES)
+                . '"</a>';
 
-        $message = _t(
-            __CLASS__ . '.RolledBack',
-            'Rolled back {name} to version {version} {link}',
-            array(
-                'name' => $record->i18n_singular_name(),
-                'version' => $record->Version,
-                'link' => $link
-            )
-        );
+            $message = _t(
+                __CLASS__ . '.RolledBack',
+                'Rolled back {name} to version {version} {link}',
+                array(
+                    'name' => $record->i18n_singular_name(),
+                    'version' => $record->Version,
+                    'link' => $link
+                )
+            );
 
-        $form->sessionMessage($message, 'good', ValidationResult::CAST_HTML);
+            $form->sessionMessage($message, 'good', ValidationResult::CAST_HTML);
+        } catch (\Exception $e) {
+            $form->sessionMessage($e->getMessage(), 'bad', ValidationResult::CAST_HTML);
+        }
 
         $controller = $this->getToplevelController();
         return $controller->redirect($record->CMSEditLink());
