@@ -25,7 +25,7 @@ class GridFieldHistoryButton extends GridFieldViewButton
             'Link' => Controller::join_links(
                 $field->Link('item'),
                 $record->ID,
-                'view?VersionID='. $record->Version
+                'view?v='. $record->Version
             )
         ));
 

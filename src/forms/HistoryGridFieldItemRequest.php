@@ -34,7 +34,7 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
     /**
      * @var int
      */
-    protected $versionID;
+    protected $version;
 
     public function __construct($gridField, $component, $record, $requestHandler, $popupFormName)
     {
@@ -55,8 +55,8 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
      */
     protected function getVersionRecordFromRecord(DataObject $record, $requestHandler) : DataObject {
         // validate version ID
-        $this->versionID = $requestHandler->getRequest()->requestVar('VersionID');
-        if(!$this->versionID) {
+        $this->version = $requestHandler->getRequest()->requestVar('v');
+        if(!$this->version) {
             throw new \Exception(
                 _t(
                     __CLASS__ . ".VERSION_NOT_PROVIDED",
@@ -84,14 +84,14 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
             );
         }
 
-        $version = $record->VersionsList()
-                    ->filter('Version', $this->versionID)
+        $versioned_record = $record->VersionsList()
+                    ->filter('Version', $this->version)
                     ->first();
-        if(empty($version->ID)) {
+        if(empty($versioned_record->ID)) {
             throw new \Exception(
                 _t(
                     __CLASS__ . ".VERSION_NOT_FOUND",
-                    "No version #{$this->versionID} found for this record"
+                    "No version #{$this->version} found for this record"
                 )
             );
         }
@@ -124,8 +124,8 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
         $record = $this->record;
         $fields->push(
             HiddenField::create(
-                'VersionID',
-                'VersionID',
+                'v',
+                'Version',
                 $record->Version
             )
         );
@@ -149,7 +149,7 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
                 __CLASS__ . '.VIEWINGLATEST',
                 "Currently viewing the latest version, created {created}",
                 [
-                    'version' => $this->versionID,
+                    'version' => $this->version,
                     'created' => $record->Created
                 ]
             );
@@ -158,7 +158,7 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
                 __CLASS__ . '.VIEWINGVERSION',
                 "Currently viewing version {version}, created {created}",
                 [
-                    'version' => $this->versionID,
+                    'version' => $this->version,
                     'created' => $record->Created
                 ]
             );
