@@ -145,12 +145,22 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
         $fields = $fields->makeReadonly();
 
         if ($record->isLatestVersion()) {
-            $message = _t(__CLASS__ . '.VIEWINGLATEST', 'Currently viewing the latest version.');
+            $message = _t(
+                __CLASS__ . '.VIEWINGLATEST',
+                "Currently viewing the latest version, created {created}",
+                [
+                    'version' => $this->versionID,
+                    'created' => $record->Created
+                ]
+            );
         } else {
             $message = _t(
                 __CLASS__ . '.VIEWINGVERSION',
-                "Currently viewing version {version}.",
-                ['version' => $this->versionID]
+                "Currently viewing version {version}, created {created}",
+                [
+                    'version' => $this->versionID,
+                    'created' => $record->Created
+                ]
             );
         }
 
