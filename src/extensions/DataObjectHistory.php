@@ -74,14 +74,22 @@ class DataObjectHistory extends DataExtension
                 'Author.Name' => _t(__CLASS__ . '.AUTHOR', 'Author')
             ]);
 
+        $list = Versioned::get_all_versions(
+                    $owner->ClassName,
+                    $owner->ID
+                )->setQueriedColumns([
+                    "Version",
+                    "WasPublished",
+                    "WasDeleted",
+                    "ClassName",
+                    "LastEdited",
+                    "AuthorID"
+                ]);
         return FieldList::create(
             GridField::create(
                 'History',
                 '',
-                Versioned::get_all_versions(
-                    $owner->ClassName,
-                    $owner->ID
-                )
+                $list
                 ->sort('Version', 'DESC'),
                 $config
             )
