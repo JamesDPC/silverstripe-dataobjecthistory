@@ -196,34 +196,21 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
             return null;
         }
 
-        $this->beforeExtending('updateFormActions', function (FieldList $actions) use ($record) {
-            if (!$record->isLatestVersion()) {
-                $actions->removeByName([
-                    'action_doUnpublish',
-                    'action_doUnpublish',
-                    'action_doDelete',
-                    'action_doSave',
-                    'action_doPublish',
-                    'action_doArchive'
-                ]);
-            }
-            if ($record->canEdit()) {
-                $actions->push(
-                    FormAction::create(
-                        'doRollback',
-                        _t(__CLASS__ . '.REVERT', 'Revert to this version')
-                    )
-                        ->setUseButtonTag(true)
-                        ->setDescription(_t(
-                            __CLASS__ . '.BUTTONREVERTDESC',
-                            'Publish this record to the draft site'
-                        ))
-                        ->addExtraClass('btn-warning font-icon-back-in-time')
-                );
-            }
-        });
-
-        $actions = parent::getFormActions();
+        $actions = Fieldlist::create();
+        if ($record->canEdit()) {
+            $actions->push(
+                FormAction::create(
+                    'doRollback',
+                    _t(__CLASS__ . '.REVERT', 'Revert to this version')
+                )
+                    ->setUseButtonTag(true)
+                    ->setDescription(_t(
+                        __CLASS__ . '.BUTTONREVERTDESC',
+                        'Publish this record to the draft site'
+                    ))
+                    ->addExtraClass('btn-warning font-icon-back-in-time')
+            );
+        }
         return $actions;
     }
 }
