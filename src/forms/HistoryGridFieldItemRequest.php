@@ -176,9 +176,25 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
     {
         $record = $this->record;
 
+        if ($record->isLatestVersion()) {
+            return $this->httpError(
+                    403,
+                    _t(
+                        __CLASS__ . ".CANNOT_ROLLBACK_LATEST_VERSION",
+                        "You cannot roll back to this version, as it is the latest version"
+                    )
+            );
+        }
+
         // Check permission
         if (!$record->canEdit()) {
-            return $this->httpError(403);
+            return $this->httpError(
+                    403,
+                    _t(
+                        __CLASS__ . ".NO_ACCESS",
+                        "Forbidden"
+                    )
+            );
         }
 
         // Save from form data
@@ -207,6 +223,11 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
     {
         $record = $this->getRecord();
         if (!$record || !$record->hasExtension(Versioned::class)) {
+            return null;
+        }
+
+        // cannot show rollback for latest version, makes no sense
+        if ($record->isLatestVersion()) {
             return null;
         }
 
