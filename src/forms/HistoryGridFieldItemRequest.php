@@ -168,7 +168,7 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
         }
 
         // Save from form data
-        $record->doRollbackTo($record->Version);
+        $record->rollbackRecursive($record->Version);
         $link = '<a href="' . $this->Link('edit') . '">"'
             . htmlspecialchars($record->Title, ENT_QUOTES)
             . '"</a>';
