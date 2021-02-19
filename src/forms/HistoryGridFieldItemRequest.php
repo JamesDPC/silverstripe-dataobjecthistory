@@ -129,14 +129,18 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
                 $record->Version
             )
         );
-        $fields->addFieldToTab(
-            'Root.Main',
-            ReadonlyField::create(
-                'Sort',
-                _t(__CLASS__ . '.Position', 'Position'),
-                $record->Sort
-            )
-        );
+
+        // if the record has a 'Sort' field
+        if($record->hasField('Sort')) {
+            $fields->addFieldToTab(
+                'Root.Main',
+                ReadonlyField::create(
+                    'Sort',
+                    _t(__CLASS__ . '.Position', 'Position'),
+                    $record->Sort
+                )
+            );
+        }
 
         $fields = $fields->makeReadonly();
 
