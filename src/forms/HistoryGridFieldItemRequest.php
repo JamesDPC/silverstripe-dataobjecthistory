@@ -192,7 +192,7 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
     public function getFormActions()
     {
         $record = $this->getRecord();
-        if (!$record || !$record->has_extension(Versioned::class)) {
+        if (!$record || !$record->hasExtension(Versioned::class)) {
             return null;
         }
 
