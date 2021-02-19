@@ -8,6 +8,7 @@ use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\Versioned\VersionedGridFieldItemRequest;
