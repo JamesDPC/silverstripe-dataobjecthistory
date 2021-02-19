@@ -71,7 +71,9 @@ class DataObjectHistory extends DataExtension
                 'Version' => '#',
                 'LastEdited.Nice' => _t(__CLASS__ . '.WHEN', 'When'),
                 'Title' => _t(__CLASS__ . '.TITLE', 'Title'),
-                'Author.Name' => _t(__CLASS__ . '.AUTHOR', 'Author')
+                'Author.Name' => _t(__CLASS__ . '.AUTHOR', 'Author'),
+                'WasPublished.Nice'  => _t(__CLASS__ . '.WAS_PUBLISHED', 'Published?'),
+                'WasDeleted.Nice'  => _t(__CLASS__ . '.WAS_PUBLISHED', 'Deleted?')
             ]);
 
         $list = Versioned::get_all_versions(
