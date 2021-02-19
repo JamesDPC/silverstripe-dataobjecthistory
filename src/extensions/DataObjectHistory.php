@@ -76,17 +76,16 @@ class DataObjectHistory extends DataExtension
                 'WasDeleted.Nice'  => _t(__CLASS__ . '.WAS_PUBLISHED', 'Deleted?')
             ]);
 
-        $list = Versioned::get_all_versions(
-                    $owner->ClassName,
-                    $owner->ID
-                )->setQueriedColumns([
-                    "Version",
-                    "WasPublished",
-                    "WasDeleted",
-                    "ClassName",
-                    "LastEdited",
-                    "AuthorID"
-                ]);
+        $list = $this->owner->VersionsList()
+                    ->sort(['Version' => 'DESC'])
+                    ->setQueriedColumns([
+                        "Version",
+                        "WasPublished",
+                        "WasDeleted",
+                        "ClassName",
+                        "LastEdited",
+                        "AuthorID"
+                    ]);
         return FieldList::create(
             GridField::create(
                 'History',
