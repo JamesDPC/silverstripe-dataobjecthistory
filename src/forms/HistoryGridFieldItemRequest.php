@@ -37,15 +37,65 @@ class HistoryGridFieldItemRequest extends VersionedGridFieldItemRequest
 
     public function __construct($gridField, $component, $record, $requestHandler, $popupFormName)
     {
-        if ($this->versionID = $requestHandler->getRequest()->requestVar('VersionID')) {
-            if (!$record = Versioned::get_version(get_class($record), $record->ID, $this->versionID)) {
-                return $requestHandler->httpError(
-                    404,
-                    _t(__CLASS__ . '.InvalidVersion', 'Invalid version')
-                );
-            }
+        try {
+            $record = $this->getVersionRecordFromRecord($record, $requestHandler);
+            parent::__construct($gridField, $component, $record, $requestHandler, $popupFormName);
+        } catch (\Exception $e) {
+            return $requestHandler->httpError(
+                404,
+                _t(__CLASS__ . '.InvalidVersion', $e->getMessage())
+            );
         }
-        parent::__construct($gridField, $component, $record, $requestHandler, $popupFormName);
+    }
+
+    /**
+     * Get the record at the requested version
+     * @return DataObject
+     */
+    protected function getVersionRecordFromRecord(DataObject $record, $requestHandler) : DataObject {
+        // validate version ID
+        $this->versionID = $requestHandler->getRequest()->requestVar('VersionID');
+        if(!$this->versionID) {
+            throw new \Exception(
+                _t(
+                    __CLASS__ . ".VERSION_NOT_PROVIDED",
+                    "No version provided"
+                )
+            );
+        }
+
+        // validate the record
+        if(!$record->hasExtension(Versioned::class)) {
+            throw new \Exception(
+                _t(
+                    __CLASS__ . ".RECORD_NOT_VERSIONED",
+                    "The record is not versioned"
+                )
+            );
+        }
+
+        if(!$record->canView()) {
+            throw new \Exception(
+                _t(
+                    __CLASS__ . ".NO_ACCESS",
+                    "You do not have access to this record"
+                )
+            );
+        }
+
+        $version = $record->VersionsList()
+                    ->filter('Version', $this->versionID)
+                    ->first();
+        if(empty($version->ID)) {
+            throw new \Exception(
+                _t(
+                    __CLASS__ . ".VERSION_NOT_FOUND",
+                    "No version #{$this->versionID} found for this record"
+                )
+            );
+        }
+
+        return $version;
     }
 
     public function view($request)
